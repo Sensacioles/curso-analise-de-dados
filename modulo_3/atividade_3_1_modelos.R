@@ -81,3 +81,49 @@ hist(calcular_medias(100), breaks = 30, main = "Médias (n=100)",
 
 # Restaura o comportamento original da tela dos plots
 par(mfrow = c(1, 1))
+
+# 4.1 Atividade sugerida no tópico 2: Calcule intervalos de confiança para 500
+# amostras e visualizar quais contêm a média verdadeira. Espera-se em torno
+# de 95% dos ICs em 95% capturam o parâmetro.
+quantil_normal <- qnorm(0.975)
+quantil_normal
+
+# Erro padrão aproveitando a fórmula utilizada na sessão 1.2 do código
+erro_padrao <- desvio_populacional / sqrt(n)
+erro_padrao
+
+# Fórmula do IC: média ± z * erro_padrão
+
+# Estrutura de dados contendo todas as informações necessárias para 
+# visualização do conteúdo. O parâmetro 'contem_media' checa se o intervalo
+# de confiança contêm a média populacional
+df_ic <- tibble(
+  amostra = 1:K,
+  media = medias_amostrais,
+  limite_inferior = media - quantil_normal * erro_padrao,
+  limite_superior = media + quantil_normal * erro_padrao,
+  contem_media = limite_inferior < media_populacional 
+                 & limite_superior > media_populacional
+)
+
+# Contagem de quantos ICs contêm a média (TRUE) e quais não contêm (FALSE)
+table(df_ic$contem_media)
+
+# Proporção de ICs que contêm a média. Espera-se em torno dos 95~96:
+mean(df_ic$contem_media)
+
+# Visualização dos primeiros 100 intervalos de confiança
+# ICs em azul contêm a média, enquanto os em vermelho não
+df_ic %>%
+  slice(1:100) %>%                                       # Pegar apenas os 100 primeiros
+  ggplot(aes(x = amostra, y = media, color = contem_media)) +
+  geom_point(size = 2) +                                 # Ponto = média amostral
+  geom_errorbar(aes(ymin = limite_inferior, ymax = limite_superior), width = 0.3) + # Barras = IC
+  geom_hline(yintercept = media_populacional, color = "black", linewidth = 0.8) +  # Linha = média verdadeira
+  scale_color_manual(values = c("TRUE" = "steelblue", "FALSE" = "red")) +
+  labs(title = "Intervalos de Confiança de 95%",
+       subtitle = "Linha preta = média verdadeira (26)",
+       x = "Amostra", 
+       y = "IMC (kg/m²)") +
+  theme_minimal() +
+  theme(legend.position = "none")
