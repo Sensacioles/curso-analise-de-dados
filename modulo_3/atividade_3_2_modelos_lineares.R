@@ -101,7 +101,94 @@ ggplot(pasis, aes(x = idade, y = pa)) +
 
 
 # 2.1 Modelos de regressão linear simples
-#
+# Modela a relação entre variáveis a partir de uma reta
+
+# Fórmula: Y = β0 + β1*X + ε onde:
+
+# # Y = Variável DEPENDENTE (objetivo da previsão), exemplo: pressão arterial;
+# # X = Variável INDEPENDENTE (parâmetro), exemplo: idade;
+# # β0 = Intercepto, valor de Y quando X = 0;
+# # β1 = Inclinação, quanto Y muda para cada unidade de X;
+# # ε = Erro, variação não explicada pelo modelo
+
+# Correlação vs Regressão
+# Correlação mede a força de uma relação enquanto regressão quantifica a 
+# relação (variação de Y em função de X).
+
+
+# 2.1.1 Ajuste do modelo para regressão linear simples
+
+# lm() = linear model (modelo linear);
+# Fórmula: variável dependente ~ variável independente
+# Ou seja: "pa EM FUNÇÃO DE idade" ou "pa EXPLICADA POR idade"
+modelo_simples <- lm(pa ~ idade, data = pasis)
+
+# Output dos coeficientes β0 (intercepto) e β1 (inclinação)
+modelo_simples
+
+# (Intercept) = β0 = Valor de pa quando idade=0. Nesse caso não tem sentido
+# prático pois não há elementos com "0 anos" nos dados mockados;
+# idade = β1 = Variação de pa para cada idade+=1. Ou seja, para cada ano que
+# e passa, pa cresce aumenta em β1 mmHg
+
+# Resumo do modelo
+summary(modelo_simples)
+
+# Coefficients:
+# # Estimate = Valor estimado do coeficiente;
+# # Std. Error = Erro padrão (incerteza do coeficiente);
+# # t value = estatística t;
+# # Pr(>|t|) = p-valor. Se p < 0.05, então coeficiente significativo;
+
+# Signif. codes = Legenda a partir de asteriscos para representar a 
+# significância dos coeficientes β0 e β1 ('***' muito significativo, 
+# '*' pouco significativo, '' nenhuma significância);
+
+# Residual standard error: Ou RSE, medida da diferença entre as variáveis 
+# observadas e as projetadas, em n-2 (n sendo a quantidade de elementos
+# observados) graus de liberdade;
+
+# Multiple R-squared: Proporção da variação de Y explicada por X, pode ser lida
+# em porcentagem. Exemplo: X explica 43,5% da variação de Y 
+# nos dados projetados;
+# # OBSERVAÇÃO: Quanto mais se aproxima de 1, melhor o modelo. Porém R²=1
+# # pode significar um modelo em overfit.
+
+# F-statistic e p-value: Significância do modelo como um todo.
+
+# Traz somente o R² do modelo
+summary(modelo_simples)$r.squared
+
+
+# 2.1.2 Interpretação simplificada dos resultados
+
+# Executando as linhas abaixo, observa-se que R² = 0.435 e β1 ≃ 0.7
+summary(modelo_simples)$r.squared; coef(modelo_simples)["idade"]
+
+# Pode-se dizer que:
+# # a) idade explica 43,5% da variação na pressão arterial;
+# # b) Para cada ano em idade, a pressão arterial aumenta em média 
+# # aproximadamente 0.7 mmHg.
+
+
+# 2.1.3 Visualização gráfica
+ggplot(pasis, aes(x = idade, y = pa)) + 
+  geom_point(size = 3, color = "darkblue", alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+  labs(title = "Regressão Linear: PA ~ Idade",
+       x = "Idade (anos)", 
+       y = "PA Sistólica (mmHg)") +
+  theme_bw()
+
+# Onde:
+# geom_smooth(method = "lm"): Adiciona a reta de regressão;
+# se = TRUE: Mostra a faixa de incerteza (intervalo de confiança);
+# A reta de regressão basicamente é: PA = β0 + β1*idade
+
+# Observações:
+# # a) A reta corta a dispersão dos pontos praticamente ao meio;
+# # b) A faixa cinza mostra a incerteza da estimativa.
+
 
 # 2.2 Modelos de regressão linear múltipla
 #
