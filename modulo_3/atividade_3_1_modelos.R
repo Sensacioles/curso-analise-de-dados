@@ -1,3 +1,5 @@
+# Módulo 3 - Aula 1 - Inferência estatística
+
 # Declara pacote tidyverse e define semente para replicar testes do material.
 library(tidyverse)
 set.seed(123456)
